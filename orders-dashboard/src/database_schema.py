@@ -84,7 +84,7 @@ class DatabaseSchema:
         for table_name, table_sql in tables:
             try:
                 connector.execute_query(table_sql)
-                print(f"✓ Table '{table_name}' created successfully")
+                print(f"Table '{table_name}' created successfully")
             except Exception as e:
                 print(f"✗ Error creating table '{table_name}': {e}")
                 return False
@@ -114,7 +114,7 @@ class DatabaseSchema:
         
         try:
             connector.execute_query(orders_summary_view)
-            print("✓ View 'v_orders_summary' created")
+            print("View 'v_orders_summary' created")
             return True
         except Exception as e:
             print(f"✗ Error creating view: {e}")

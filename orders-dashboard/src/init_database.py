@@ -22,7 +22,7 @@ def init_database(host="localhost", user="root", password="root", database="orde
     connector = MySQLConnector(host, user, password, "mysql")  # Connect to 'mysql' DB first
     
     if connector.connect():
-        print("✓ Connected to MySQL")
+        print("Connected to MySQL")
     else:
         print("✗ Failed to connect to MySQL")
         print("Please check your credentials:")
@@ -34,21 +34,21 @@ def init_database(host="localhost", user="root", password="root", database="orde
     print("\n[1.5] Dropping existing database (if any)...")
     try:
         connector.execute_query(f"DROP DATABASE IF EXISTS {database}")
-        print(f"✓ Dropped existing database (if it existed)")
+        print(f"Dropped existing database (if it existed)")
     except Exception as e:
         print(f"⚠ Could not drop database: {e}")
     
     # Step 2: Create database
     print("\n[2] Creating database...")
     if DatabaseSchema.create_database(connector):
-        print(f"✓ Database '{database}' created")
+        print(f"Database '{database}' created")
     
     # Step 3: Create schema
     print("\n[3] Creating tables...")
     # Switch to the new database by executing USE statement
     connector.execute_query(f"USE {database}")
     if DatabaseSchema.create_schema(connector):
-        print("✓ All tables created successfully")
+        print("All tables created successfully")
     else:
         print("✗ Failed to create tables")
         connector.disconnect()
@@ -57,7 +57,7 @@ def init_database(host="localhost", user="root", password="root", database="orde
     # Step 4: Create views
     print("\n[4] Creating views...")
     if DatabaseSchema.create_views(connector):
-        print("✓ Views created successfully")
+        print("Views created successfully")
     
     # Step 5: Load initial data from CSV
     print("\n[5] Loading initial data from CSV...")
@@ -88,7 +88,7 @@ def init_database(host="localhost", user="root", password="root", database="orde
                         success, message = loader.load_items(df, csv_file)
                     
                     if success:
-                        print(f"    ✓ {message}")
+                        print(f"    {message}")
                     else:
                         print(f"    ✗ {message}")
             except Exception as e:
@@ -105,7 +105,7 @@ def init_database(host="localhost", user="root", password="root", database="orde
     connector.disconnect()
     
     print("\n" + "=" * 60)
-    print("✓ Database initialization complete!")
+    print("Database initialization complete!")
     print("=" * 60)
     
     return True

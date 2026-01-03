@@ -43,7 +43,7 @@ echo -e "${GREEN}✓ Dependencies installed${NC}"
 # Initialize database
 echo ""
 echo "🗄️  Initializing database..."
-if python3 init_database.py; then
+if python3 src/init_database.py; then
     echo -e "${GREEN}✓ Database initialized${NC}"
 else
     echo -e "${RED}✗ Database initialization failed${NC}"
@@ -64,4 +64,4 @@ echo "💡 Tip: To insert CSV data into existing tables without clearing:"
 echo "    python3 src/csv_insert.py data/<file>.csv <table_name> --password \"\""
 echo ""
 
-python3 -m streamlit run dashboard_mysql.py
+python3 -m streamlit run src/dashboard_mysql.py

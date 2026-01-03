@@ -17,7 +17,6 @@ from src import FILE_CONFIG, DataLoader, DataWarehouse, KPIAnalyzer, ReportGener
 st.set_page_config(
     page_title="Orders Analytics Dashboard",
     layout="wide",
-    page_icon="📊",
     initial_sidebar_state="expanded"
 )
 
@@ -231,7 +230,7 @@ def main():
                 border-radius: 12px; 
                 margin-bottom: 2rem;
                 box-shadow: 0 4px 15px rgba(0, 102, 204, 0.2);'>
-        <h1 style='color: white; margin: 0; font-size: 2.5rem;'>📊 Orders Analytics Dashboard</h1>
+        <h1 style='color: white; margin: 0; font-size: 2.5rem;'>Orders Analytics Dashboard</h1>
         <p style='color: rgba(255,255,255,0.9); margin: 0.5rem 0 0 0; font-size: 1.1rem;'>
             Real-time order management & performance insights
         </p>
@@ -265,10 +264,10 @@ def main():
 
     # Data Input Section
     st.sidebar.markdown("""
-    <h3 style='color: #f8fafc; margin-top: 1rem; margin-bottom: 1.5rem;'>📁 Data Input</h3>
+    <h3 style='color: #f8fafc; margin-top: 1rem; margin-bottom: 1rem;'>Data Input</h3>
     """, unsafe_allow_html=True)
     
-    with st.sidebar.expander("📤 Upload & Update", expanded=True):
+    with st.sidebar.expander("Upload & Update", expanded=True):
         st.markdown("Upload your CSV files to update the data:")
         up_web = st.file_uploader("Web Orders (.csv)", type='csv', key='web')
         up_app = st.file_uploader("App Orders (.csv)", type='csv', key='app')
@@ -319,7 +318,7 @@ def main():
     
     with col1:
         st.metric(
-            label="💰 Total Revenue",
+            label="Total Revenue",
             value=f"${rev:,.0f}",
             delta=None,
             help="Sum of completed orders"
@@ -327,7 +326,7 @@ def main():
     
     with col2:
         st.metric(
-            label="🛒 Average Order Value",
+            label="Average Order Value",
             value=f"${aov:,.0f}",
             delta=None,
             help="Average transaction value"
@@ -335,7 +334,7 @@ def main():
     
     with col3:
         st.metric(
-            label="↩️ Return Rate",
+            label="Return Rate",
             value=f"{rate:.1f}%",
             delta=None,
             delta_color="inverse",
@@ -344,7 +343,7 @@ def main():
     
     with col4:
         st.metric(
-            label="❌ Cancellation Rate",
+            label="Cancellation Rate",
             value=f"{cancel:.1f}%",
             delta=None,
             delta_color="inverse",
@@ -355,7 +354,7 @@ def main():
 
     # Charts Section
     st.markdown("""
-    <h2 style='color: #1e293b; margin-bottom: 1.5rem;'>📊 Visual Analytics</h2>
+    <h2 style='color: #1e293b; margin-bottom: 1.5rem;'>Visual Analytics</h2>
     """, unsafe_allow_html=True)
     
     chart_col1, chart_col2 = st.columns([2, 1], gap="large")
@@ -392,7 +391,7 @@ def main():
             
             st.altair_chart(area_chart + revenue_chart, use_container_width=True)
         else:
-            st.info("📊 No data available for the selected period")
+            st.info("No data available for the selected period")
             
     # Channel Distribution
     with chart_col2:
@@ -425,7 +424,7 @@ def main():
             
             st.altair_chart(channel_chart + text, use_container_width=True)
         else:
-            st.info("📊 No data available")
+            st.info("No data available")
 
     st.markdown("---")
 
@@ -457,7 +456,7 @@ def main():
 
     # Export Section
     st.sidebar.markdown("""
-    <h3 style='color: #f8fafc; margin-top: 1rem; margin-bottom: 1.5rem;'>📥 Export Options</h3>
+    <h3 style='color: #f8fafc; margin-top: 1rem; margin-bottom: 1.5rem;'>Export Options</h3>
     """, unsafe_allow_html=True)
     
     if st.sidebar.button("🖨️ Generate PDF Report", use_container_width=True):
