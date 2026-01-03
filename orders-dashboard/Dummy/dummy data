@@ -1,0 +1,164 @@
+import pandas as pd
+import numpy as np
+import random
+from datetime import datetime, timedelta
+import os
+
+# ==========================================
+# CẤU HÌNH
+# ==========================================
+START_DATE = datetime(2025, 9, 1)
+END_DATE = datetime(2025, 12, 31)
+
+# Số lượng SKU trong kho (Catalog)
+NUM_SKUS = 200 
+
+# Cấu hình file output (Lưu cùng thư mục code)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FILES = {
+    "web": os.path.join(BASE_DIR, "orders_web.csv"),
+    "app": os.path.join(BASE_DIR, "orders_app.csv"),
+    "items": os.path.join(BASE_DIR, "items.csv"),
+    "channels": os.path.join(BASE_DIR, "channels.csv")
+}
+
+# ==========================================
+# 1. TẠO CATALOG SẢN PHẨM GIẢ (200 ITEMS)
+# ==========================================
+def generate_catalog(n=200):
+    catalog = []
+    for i in range(1, n + 1):
+        catalog.append({
+            "sku": f"SKU_{i:03d}", # Ví dụ: SKU_001
+            "price": round(random.uniform(10, 500), 2) # Giá từ $10 đến $500
+        })
+    return catalog
+
+# ==========================================
+# 2. HÀM SINH DỮ LIỆU ĐƠN HÀNG
+# ==========================================
+def generate_orders_and_items():
+    print("⏳ Đang khởi tạo dữ liệu giả lập... Vui lòng đợi.")
+    
+    catalog = generate_catalog(NUM_SKUS)
+    
+    orders_web = []
+    orders_app = []
+    order_items = []
+    
+    current_date = START_DATE
+    global_order_id = 1000 # Bắt đầu ID đơn hàng từ 1000
+    global_item_id = 1     # ID cho bảng items
+    
+    # Duyệt qua từng ngày
+    total_days = (END_DATE - START_DATE).days + 1
+    
+    for day_idx in range(total_days):
+        # Ngày hiện tại
+        date_str = current_date.strftime("%Y-%m-%d")
+        
+        # --- A. SINH DỮ LIỆU WEB (50 - 200 đơn/ngày) ---
+        num_web = random.randint(50, 200)
+        for _ in range(num_web):
+            # Tạo thông tin đơn hàng
+            status = np.random.choice(
+                ['completed', 'returned', 'cancelled', 'processing'], 
+                p=[0.7, 0.1, 0.1, 0.1] # Tỷ lệ trạng thái
+            )
+            
+            # Update time là ngẫu nhiên trong ngày
+            time_offset = random.randint(0, 86399) # giây trong ngày
+            updated_at = current_date + timedelta(seconds=time_offset)
+            
+            orders_web.append([
+                global_order_id,
+                1, # Channel ID 1 = Web
+                date_str,
+                status,
+                updated_at.strftime("%Y-%m-%d %H:%M:%S")
+            ])
+            
+            # Tạo chi tiết đơn hàng (Mua 1-5 sản phẩm ngẫu nhiên)
+            num_products = random.randint(1, 5)
+            selected_products = random.sample(catalog, num_products)
+            
+            for prod in selected_products:
+                qty = random.randint(1, 3)
+                order_items.append([
+                    global_item_id,
+                    global_order_id,
+                    prod['sku'],
+                    qty,
+                    prod['price']
+                ])
+                global_item_id += 1
+            
+            global_order_id += 1
+
+        # --- B. SINH DỮ LIỆU APP (20 - 80 đơn/ngày) ---
+        num_app = random.randint(20, 80)
+        for _ in range(num_app):
+            status = np.random.choice(
+                ['completed', 'returned', 'cancelled'], 
+                p=[0.8, 0.15, 0.05]
+            )
+            
+            time_offset = random.randint(0, 86399)
+            updated_at = current_date + timedelta(seconds=time_offset)
+            
+            orders_app.append([
+                global_order_id,
+                2, # Channel ID 2 = App
+                date_str,
+                status,
+                updated_at.strftime("%Y-%m-%d %H:%M:%S")
+            ])
+            
+            # Tạo items cho App
+            num_products = random.randint(1, 3) # App mua ít món hơn
+            selected_products = random.sample(catalog, num_products)
+            
+            for prod in selected_products:
+                qty = random.randint(1, 2)
+                order_items.append([
+                    global_item_id,
+                    global_order_id,
+                    prod['sku'],
+                    qty,
+                    prod['price']
+                ])
+                global_item_id += 1
+                
+            global_order_id += 1
+            
+        current_date += timedelta(days=1)
+
+    # ==========================================
+    # 3. XUẤT FILE CSV
+    # ==========================================
+    print(f"📊 Tổng kết:")
+    print(f"- Số ngày giả lập: {total_days}")
+    print(f"- Đơn Web: {len(orders_web)}")
+    print(f"- Đơn App: {len(orders_app)}")
+    print(f"- Tổng dòng Items: {len(order_items)}")
+
+    # Convert to DataFrame
+    df_web = pd.DataFrame(orders_web, columns=['order_id', 'channel_id', 'order_date', 'status', 'updated_at'])
+    df_app = pd.DataFrame(orders_app, columns=['order_id', 'channel_id', 'order_date', 'status', 'updated_at'])
+    df_items = pd.DataFrame(order_items, columns=['item_id', 'order_id', 'sku', 'quantity', 'unit_price'])
+    
+    df_channels = pd.DataFrame([
+        [1, "Website"],
+        [2, "Mobile App"]
+    ], columns=['channel_id', 'channel_name'])
+
+    # Save CSV
+    df_web.to_csv(FILES['web'], index=False)
+    df_app.to_csv(FILES['app'], index=False)
+    df_items.to_csv(FILES['items'], index=False)
+    df_channels.to_csv(FILES['channels'], index=False)
+
+    print(f"✅ Đã tạo thành công 4 file CSV tại: {BASE_DIR}")
+
+if __name__ == "__main__":
+    generate_orders_and_items()
